@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-# Sitemap: added once the domain is set (see astro.config.mjs, site).
+Sitemap: https://emmanuel-mbaeri-portfolio.vercel.app/sitemap-index.xml

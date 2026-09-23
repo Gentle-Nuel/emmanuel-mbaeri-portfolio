@@ -9,7 +9,6 @@ import Contact from '../components/Contact.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { profile } from '../data/profile';
 
-// `url` is added once the domain is set (astro.config.mjs's `site`).
 // No `address`: the user asked (Sep 23) not to publish his location.
 const personJsonLd = {
   '@context': 'https://schema.org',
@@ -17,6 +16,7 @@ const personJsonLd = {
   name: profile.name,
   alternateName: profile.legalName,
   jobTitle: profile.role,
+  url: Astro.site,
   sameAs: [profile.contact.github.href, profile.contact.x.href],
 };
 ---
