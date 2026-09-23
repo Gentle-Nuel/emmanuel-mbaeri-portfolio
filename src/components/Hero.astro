@@ -1,0 +1,152 @@
+---
+import { profile } from '../data/profile';
+
+// Deterministic barcode strip (decorative). Seeded so builds are stable.
+function barcode(seed: number, count: number) {
+  let s = seed;
+  const rand = () => ((s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296);
+  const bars: { x: number; w: number }[] = [];
+  let x = 0;
+  for (let i = 0; i < count; i++) {
+    const w = [1, 1, 2, 2, 3, 4][Math.floor(rand() * 6)];
+    bars.push({ x, w });
+    x += w + [1, 1, 2, 3][Math.floor(rand() * 4)];
+  }
+  return { bars, width: x };
+}
+const code = barcode(2026, 90);
+---
+
+<section class="hero" aria-labelledby="name">
+  <p class="hero__sku">
+    <span>SKU EM-2026</span>
+    <span>{profile.role}</span>
+    <span>Qty 1</span>
+  </p>
+
+  <div class="hero__namewrap">
+    <h1 id="name" class="display hero__name">
+      <span class="hero__line">Emmanuel</span>
+      <span class="hero__line">Mbaeri</span>
+    </h1>
+    <span class="tag tag--ink hero__sticker" aria-hidden="true">Design + full-stack</span>
+  </div>
+
+  <div class="hero__foot">
+    <p class="hero__lede">{profile.lede}</p>
+    <div class="hero__side">
+      <p class="hero__where">
+        <span class="tag tag--live"><span class="tag__dot" aria-hidden="true"></span>{profile.availability}</span>
+        <span>{profile.timezone} · {profile.remote}</span>
+      </p>
+      <div class="hero__actions">
+        <a class="btn" href="#work">See the work</a>
+        <a class="btn btn--paper" href={`mailto:${profile.contact.email}`}>Email me</a>
+        <a class="btn btn--ghost" href={profile.cv.href} download={profile.cv.downloadName}>Download CV</a>
+      </div>
+    </div>
+  </div>
+
+  <svg class="hero__barcode" viewBox={`0 0 ${code.width} 40`} preserveAspectRatio="none" aria-hidden="true">
+    {code.bars.map((b) => <rect x={b.x} y="0" width={b.w} height="40" />)}
+  </svg>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: min(calc(100svh - 3.5rem), 60rem);
+    padding: var(--s8) var(--gutter) 0;
+    background: var(--signal);
+    color: var(--on-signal);
+    --ring: var(--ink);
+    overflow: clip;
+  }
+  .hero__sku {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s6);
+    max-width: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 75%;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .hero__namewrap {
+    position: relative;
+    align-self: center;
+    justify-self: start;
+    max-width: 100%;
+    margin-block: var(--s6);
+  }
+  .hero__name {
+    /* --w is the final width-axis value; --fit is how many em wide "EMMANUEL" is at that width
+       (measured: about 4.4em at 72%, 6.1em at 100%). The size is derived so the name always fits inside the gutters. */
+    --w: 100%;
+    --fit: 6.3;
+    display: flex;
+    flex-direction: column;
+    font-stretch: var(--w);
+    font-size: min(11rem, calc((100vw - 2 * var(--gutter)) / var(--fit)));
+    animation: inflate 1.5s var(--ease-out) both;
+  }
+  @media (max-width: 40rem) {
+    .hero__name { --w: 72%; --fit: 4.6; }
+  }
+  .hero__line { display: block; }
+  @keyframes inflate {
+    from { font-stretch: 50%; letter-spacing: 0.03em; }
+    to { font-stretch: var(--w); letter-spacing: -0.01em; }
+  }
+  .hero__sticker {
+    display: flex;
+    width: max-content;
+    margin-top: var(--s6);
+    transform: rotate(-3deg);
+    font-size: clamp(1rem, 0.8rem + 0.9vw, 1.5rem);
+    padding: 0.5rem 1.2rem;
+    --cut: 0.9rem;
+    animation: sticker-in 0.6s var(--ease-out) 0.9s both;
+  }
+  @keyframes sticker-in {
+    from { transform: rotate(-14deg) scale(0.6); opacity: 0; }
+    to { transform: rotate(-3deg) scale(1); opacity: 1; }
+  }
+  @media (min-width: 48rem) {
+    .hero__sticker { position: absolute; right: 0; bottom: 4%; margin-top: 0; }
+  }
+  .hero__foot {
+    display: grid;
+    gap: var(--s8);
+    align-items: end;
+    padding-bottom: var(--s12);
+  }
+  @media (min-width: 60rem) {
+    .hero__foot { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--s16); }
+  }
+  .hero__lede {
+    max-width: 26ch;
+    font-size: var(--step-2);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .hero__side { display: grid; gap: var(--s6); justify-items: start; }
+  .hero__where {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s3) var(--s4);
+    font-weight: 600;
+  }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: var(--s4); }
+  .hero__barcode {
+    width: calc(100% + var(--gutter) * 2);
+    height: 2.25rem;
+    margin-inline: calc(var(--gutter) * -1);
+    fill: var(--ink);
+  }
+</style>

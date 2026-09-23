@@ -1,0 +1,41 @@
+---
+interface Props {
+  items: { date: string; text: string }[];
+}
+const { items } = Astro.props;
+---
+
+<ol class="timeline">
+  {
+    items.map((e) => (
+      <li>
+        <span class="date">{e.date}</span>
+        <p>{e.text}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .timeline { display: grid; }
+  li {
+    display: grid;
+    gap: var(--s2);
+    max-width: none;
+    padding-block: var(--s6);
+    border-top: 2px solid color-mix(in oklch, currentColor 35%, transparent);
+  }
+  li:last-child { border-bottom: 2px solid color-mix(in oklch, currentColor 35%, transparent); }
+  @media (min-width: 48rem) {
+    li { grid-template-columns: 10rem minmax(0, 1fr); gap: var(--s6); }
+  }
+  .date {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 80%;
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  p { max-width: 56ch; }
+</style>

@@ -1,0 +1,97 @@
+---
+import type { CaseStudy } from '../../data/work';
+
+interface Props { study: CaseStudy }
+const { study } = Astro.props;
+const chars = Math.max(...study.titleLines.map((l) => l.length));
+---
+
+<header class="head tone-signal">
+  <div class="head__main">
+    <a class="head__back" href="/#work">← All work</a>
+    <p class="head__tags">
+      {
+        study.tags.map((t) => (
+          <span class={`tag tag--${t.kind}`}>
+            {t.dot && <span class="tag__dot" aria-hidden="true" />}
+            {t.label}
+          </span>
+        ))
+      }
+    </p>
+    <h1 class="display head__title" style={`--chars:${chars};view-transition-name:title-${study.slug}`} aria-label={study.name}>
+      {study.titleLines.map((line) => <span class="head__line" aria-hidden="true">{line}</span>)}
+    </h1>
+  </div>
+
+  <div class="head__side">
+    <p class="head__outcome">{study.outcome}</p>
+    <dl class="head__meta">
+      {
+        study.meta.map((m) => (
+          <div class="row">
+            <dt>{m.label}</dt>
+            <dd>{m.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <div class="head__links">
+      {
+        study.links.map((l, i) => (
+          <a class:list={['btn', { 'btn--paper': i > 0 }]} href={l.href} rel="noopener">{l.label}</a>
+        ))
+      }
+    </div>
+  </div>
+</header>
+
+<style>
+  .head { display: grid; gap: var(--s12); padding: var(--s6) var(--gutter) var(--s24); }
+  @media (min-width: 64rem) {
+    .head { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s24); align-items: start; }
+  }
+  .head__main { display: grid; gap: var(--s6); align-content: start; justify-items: start; container-type: inline-size; }
+  .head__back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 80%;
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .head__back:hover { text-decoration: underline; text-decoration-thickness: 0.15em; }
+  .head__tags { display: flex; flex-wrap: wrap; gap: var(--s3); max-width: none; }
+  .head__title {
+    /* "EMMANUEL" measures 0.76em per letter at full width, so 0.8 leaves a little slack. */
+    font-size: min(12rem, calc(100cqi / (var(--chars) * 0.8)));
+  }
+  .head__line { display: block; }
+
+  .head__side { display: grid; gap: var(--s8); justify-items: start; }
+  .head__outcome { max-width: 36ch; font-size: var(--step-1); font-weight: 600; line-height: 1.3; }
+  .head__meta { width: 100%; border-top: 4px solid currentColor; }
+  .row {
+    display: grid;
+    gap: var(--s1);
+    padding-block: var(--s3);
+    border-bottom: 1px solid color-mix(in oklch, currentColor 30%, transparent);
+  }
+  @media (min-width: 40rem) {
+    .row { grid-template-columns: 6.5rem minmax(0, 1fr); gap: var(--s4); }
+  }
+  dt {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 80%;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  dd { font-weight: 500; overflow-wrap: anywhere; }
+  .head__links { display: flex; flex-wrap: wrap; gap: var(--s4); }
+</style>

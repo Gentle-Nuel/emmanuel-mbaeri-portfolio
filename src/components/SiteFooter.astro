@@ -1,0 +1,51 @@
+---
+import { profile } from '../data/profile';
+const built = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+---
+
+<footer class="foot">
+  <p class="foot__name">{profile.name}</p>
+  <p class="foot__meta">
+    {profile.role} · {profile.timezone}<br />
+    Updated {built}
+  </p>
+  <p class="foot__links">
+    <a href={profile.contact.github.href}>GitHub</a>
+    <a href={profile.contact.x.href}>X</a>
+    <a href={`mailto:${profile.contact.email}`}>Email</a>
+  </p>
+</footer>
+
+<style>
+  .foot {
+    display: grid;
+    gap: var(--s4);
+    padding: var(--s12) var(--gutter);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  @media (min-width: 48rem) {
+    .foot {
+      grid-template-columns: 1fr auto auto;
+      align-items: end;
+      gap: var(--s12);
+    }
+  }
+  .foot__name {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-stretch: 100%;
+    font-size: var(--step-2);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .foot__meta {
+    font-size: 0.95rem;
+    color: color-mix(in oklch, var(--paper) 72%, var(--ink));
+  }
+  .foot__links {
+    display: flex;
+    gap: var(--s6);
+    font-weight: 600;
+  }
+</style>

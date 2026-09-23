@@ -1,0 +1,52 @@
+/* Design tokens. OKLCH throughout. Spacing on a 4px base. */
+:root {
+  /* Colour: azure Signal, near-black Ink, pure Paper. Status colours are semantic and small. */
+  --ink: oklch(0.14 0 0);
+  --paper: oklch(1 0 0);
+  --signal: oklch(0.669 0.184 248.8);
+  --on-signal: var(--ink);
+  --live: oklch(0.87 0.21 128);
+  --alert: oklch(0.66 0.23 32);
+  --amber: oklch(0.84 0.16 85);
+  --mute: color-mix(in oklch, var(--ink) 62%, var(--paper));
+  --hairline: color-mix(in oklch, var(--ink) 18%, var(--paper));
+
+  /* Type */
+  --font-display: 'Anybody Variable', 'Arial Narrow', Impact, sans-serif;
+  --font-text: 'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  --step-2: clamp(1.6rem, 1.3rem + 1.1vw, 2.3rem);
+  --step-3: clamp(2.2rem, 1.6rem + 2.2vw, 3.6rem);
+  --step-4: clamp(3rem, 2rem + 4vw, 6rem);
+  --step-hero: clamp(3.5rem, 2rem + 11vw, 10rem);
+
+  /* Space (4px base) */
+  --s1: 0.25rem;
+  --s2: 0.5rem;
+  --s3: 0.75rem;
+  --s4: 1rem;
+  --s6: 1.5rem;
+  --s8: 2rem;
+  --s12: 3rem;
+  --s16: 4rem;
+  --s24: 6rem;
+  --s32: 8rem;
+  --gutter: clamp(1rem, 4vw, 3rem);
+
+  /* The diagonal cut from the studio mark, applied to labels */
+  --cut: 0.7rem;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-quick: 160ms;
+  --dur-base: 320ms;
+}
+
+/* Specimen-only comparison: chartreuse Signal instead of azure. */
+:root[data-signal='volt'] {
+  --signal: oklch(0.88 0.2 128);
+  --live: oklch(0.669 0.184 248.8);
+}

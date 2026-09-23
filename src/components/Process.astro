@@ -1,0 +1,38 @@
+---
+import Flow from './Flow.astro';
+
+// Five steps, copy and sources: docs/CONTENT.md §2 "How I work" ([Penpot][README][CV]).
+// The site does not mention AI assistance (Emmanuel's decision), so it also must not claim sole authorship of the code:
+// keep titles and steps to what he did (designed, tested, audited, shipped), not "I wrote it all".
+const steps = [
+  { kind: 'outline', tag: 'Wireframe', text: '35 phone screens designed in Penpot, with a written handoff.' },
+  { kind: 'amber', tag: 'Build', text: 'React, TypeScript and Supabase, with an offline write queue that syncs when the signal returns.' },
+  { kind: 'amber', tag: 'Audit', text: 'Every screen checked against the wireframes. Missing empty states and confirmation dialogs added.' },
+  { kind: 'live', tag: 'Tested', text: 'Real-device testing found two friction points, missing live password validation and no show/hide toggle. Both fixed the same day.' },
+  { kind: 'signal', tag: 'Shipped', text: 'Deployed to Vercel as an installable PWA, and still being refined.' },
+] as const;
+---
+
+<section class="process tone-ink" id="process" aria-labelledby="process-h">
+  <div class="process__head">
+    <h2 id="process-h" class="display process__title">Wireframe to shipped.</h2>
+    <p class="process__intro">Batchkeeper is the clearest example.</p>
+  </div>
+  <Flow steps={[...steps]} bg="var(--ink)" />
+</section>
+
+<style>
+  .process { display: grid; gap: var(--s16); padding: var(--s24) var(--gutter); }
+  .process__head { display: grid; gap: var(--s6); }
+  .process__title {
+    max-width: 16ch;
+    /* "WIREFRAME" is 9 letters at about 0.78em each, so on a phone the size follows the width. */
+    font-size: min(var(--step-4), calc((100vw - 2 * var(--gutter)) / 7.4));
+    line-height: 0.92; /* the comma after "SHIPPED" would touch the line below at 0.86 */
+  }
+  .process__intro {
+    max-width: 40ch;
+    font-size: var(--step-1);
+    color: color-mix(in oklch, var(--paper) 82%, var(--ink));
+  }
+</style>

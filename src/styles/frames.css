@@ -1,0 +1,62 @@
+/* Device frames for real screenshots. Frames are ink; on ink sections they get a light edge. */
+/* The bezel and the corner radii are proportions of the phone's own width (cqw), so a small phone
+   keeps a phone's shape instead of turning into a pill. */
+.phone {
+  --frame: var(--ink);
+  --frame-edge: color-mix(in oklch, var(--paper) 28%, var(--ink));
+  container-type: inline-size;
+  position: relative;
+  /* --ratio (width / height) and --wh (the same as a number) are set inline for tall full-page captures */
+  aspect-ratio: var(--ratio, 390 / 844);
+  margin: 0;
+  background: var(--frame);
+  /* 14.5% across and 14.5% x (width / height) down is a circular corner at any height */
+  border-radius: 14.5% / calc(14.5% * var(--wh, 0.4621));
+  box-shadow: inset 0 0 0 2px var(--frame-edge);
+}
+.phone picture,
+.phone img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.phone picture { padding: 3cqw; }
+.phone img {
+  object-fit: cover;
+  object-position: top;
+  border-radius: 11.5cqw;
+  background: var(--paper);
+}
+.phone__label {
+  position: absolute;
+  z-index: 2;
+  left: 0.6rem;
+  top: -0.9rem;
+}
+
+.browser {
+  --frame: var(--ink);
+  position: relative;
+  margin: 0;
+  padding: 2.1rem 0.45rem 0.45rem;
+  background: var(--frame);
+  clip-path: polygon(0.9rem 0, 100% 0, 100% calc(100% - 0.9rem), calc(100% - 0.9rem) 100%, 0 100%, 0 0.9rem);
+}
+.browser::before {
+  content: attr(data-url);
+  position: absolute;
+  inset: 0.45rem 0.9rem auto 0.9rem;
+  color: color-mix(in oklch, var(--paper) 72%, var(--ink));
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-stretch: 75%;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+}
+.browser picture,
+.browser img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

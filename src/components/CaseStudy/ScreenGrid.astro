@@ -1,0 +1,62 @@
+---
+import { Picture } from 'astro:assets';
+import { screenImage } from '../../data/work/screens';
+import type { ScreenRef } from '../../data/work';
+
+interface Props { screens: ScreenRef[] }
+const { screens } = Astro.props;
+const sizes = '6rem';
+---
+
+<details class="more">
+  <summary class="btn btn--signal">
+    <span class="when-closed">See more screens</span>
+    <span class="when-open">Hide screens</span>
+  </summary>
+  <p class="more__note">Each screen twice: the wireframe on the left, the built app on the right.</p>
+  <ul class="grid">
+    {
+      screens.map((s) => (
+        <li>
+          <div class="cell">
+            <figure class="phone">
+              <Picture src={screenImage('wireframe', s.slug)} alt={`Wireframe: ${s.title}`} widths={[120, 180, 240]} sizes={sizes} formats={['avif']} fallbackFormat="webp" loading="lazy" />
+            </figure>
+            <figure class="phone">
+              <Picture src={screenImage('app', s.slug)} alt={`Built: ${s.title}`} widths={[120, 180, 240]} sizes={sizes} formats={['avif']} fallbackFormat="webp" loading="lazy" />
+            </figure>
+          </div>
+          <p class="name">{s.title}</p>
+        </li>
+      ))
+    }
+  </ul>
+</details>
+
+<style>
+  .more { display: grid; gap: var(--s8); }
+  summary { cursor: pointer; width: fit-content; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  .more:not([open]) .when-open,
+  .more[open] .when-closed { display: none; }
+  .more__note { font-size: var(--step--1); font-weight: 600; }
+  .grid {
+    display: grid;
+    /* two pairs across on a phone (down to 320 px), three on desktop */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 8rem), 1fr));
+    gap: var(--s8) var(--s4);
+  }
+  @media (min-width: 64rem) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: var(--s8) var(--s6); }
+  }
+  .grid li { display: grid; gap: var(--s3); align-content: start; max-width: none; }
+  .cell { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); }
+  .name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 80%;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+</style>

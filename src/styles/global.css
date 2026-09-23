@@ -1,0 +1,160 @@
+@import './tokens.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: auto;
+  scroll-padding-top: 4.5rem; /* clears the sticky header for in-page anchors */
+  color-scheme: light;
+}
+
+/* Cross-document transitions; skipped for reduced motion because `*` does not match ::view-transition pseudos. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg, canvas { display: block; max-width: 100%; }
+a { color: inherit; text-underline-offset: 0.18em; text-decoration-thickness: 0.09em; }
+h1, h2, h3, h4 { text-wrap: balance; }
+p, li { text-wrap: pretty; max-width: 68ch; }
+ul, ol { padding: 0; list-style: none; }
+
+/* --ring is set per section (tone) so a button's own text colour never hides its focus outline. */
+:focus-visible {
+  outline: 3px solid var(--ring, currentColor);
+  outline-offset: 3px;
+}
+
+/* Section tones. Text on signal is always ink. */
+.tone-paper { background: var(--paper); color: var(--ink); --ring: var(--ink); }
+.tone-ink { background: var(--ink); color: var(--paper); --ring: var(--paper); }
+.tone-signal { background: var(--signal); color: var(--on-signal); --ring: var(--ink); }
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--s4);
+  inset-block-start: -4rem;
+  z-index: 100;
+  padding: var(--s3) var(--s4);
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+}
+.skip-link:focus { inset-block-start: var(--s4); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Display type ---------- */
+.display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-stretch: 100%;
+  text-transform: uppercase;
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Label / tag (the stockroom vocabulary) ---------- */
+.tag {
+  --tag-bg: var(--paper);
+  --tag-fg: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: 0.32rem 0.9rem 0.32rem 0.9rem;
+  background: var(--tag-bg);
+  color: var(--tag-fg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 75%;
+  font-size: 0.95rem;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  /* cut top-left and bottom-right, echoing the mark */
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+.tag--signal { --tag-bg: var(--signal); --tag-fg: var(--on-signal); }
+.tag--ink { --tag-bg: var(--ink); --tag-fg: var(--paper); }
+.tag--live { --tag-bg: var(--live); --tag-fg: var(--ink); }
+.tag--alert { --tag-bg: var(--alert); --tag-fg: var(--ink); }
+.tag--amber { --tag-bg: var(--amber); --tag-fg: var(--ink); }
+.tag--outline {
+  --tag-bg: transparent;
+  --tag-fg: currentColor;
+  box-shadow: inset 0 0 0 2px currentColor;
+  clip-path: none;
+  border-radius: 0;
+}
+.tag__dot {
+  width: 0.55em; height: 0.55em;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+/* ---------- Buttons (chamfer on a pseudo layer so focus outlines are not clipped) ---------- */
+.btn {
+  --btn-bg: var(--ink);
+  --btn-fg: var(--paper);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 3.25rem;
+  padding: 0.7rem 1.5rem;
+  color: var(--btn-fg);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 80%;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color var(--dur-quick) var(--ease-out);
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--btn-bg);
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  transition: transform var(--dur-quick) var(--ease-out), background var(--dur-quick) var(--ease-out);
+}
+.btn:hover::before { transform: translate(-2px, -2px) scale(1.015); }
+.btn:active::before { transform: translate(1px, 1px) scale(0.99); }
+.btn--paper { --btn-bg: var(--paper); --btn-fg: var(--ink); }
+.btn--signal { --btn-bg: var(--signal); --btn-fg: var(--on-signal); }
+.btn--ghost { --btn-bg: transparent; --btn-fg: currentColor; }
+.btn--ghost::before { box-shadow: none; background: transparent; outline: 2px solid currentColor; outline-offset: -2px; clip-path: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

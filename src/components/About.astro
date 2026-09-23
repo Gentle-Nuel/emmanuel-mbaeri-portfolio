@@ -1,0 +1,91 @@
+---
+import { Picture } from 'astro:assets';
+import { profile } from '../data/profile';
+
+// The portrait is optional: drop a file at src/assets/portrait.{jpg,jpeg,png,webp} and it appears here.
+const portraits = import.meta.glob<{ default: ImageMetadata }>('../assets/portrait.{jpg,jpeg,png,webp}', { eager: true });
+const portrait = Object.values(portraits)[0]?.default;
+---
+
+<section class="about tone-paper" id="about" aria-labelledby="about-h">
+  <div class="about__intro">
+    <h2 id="about-h" class="display about__title">About</h2>
+    {
+      portrait && (
+        <Picture
+          class="about__portrait"
+          src={portrait}
+          alt={`${profile.name}`}
+          widths={[320, 480, 640]}
+          sizes="(min-width: 64rem) 20rem, 60vw"
+          formats={['avif']}
+          fallbackFormat="jpeg"
+          loading="lazy"
+        />
+      )
+    }
+    <p class="about__summary">{profile.summary}</p>
+    <div class="about__edu">
+      <h3 class="label">Education</h3>
+      {
+        profile.education.map((e) => (
+          <p>
+            {e.what}, {e.where}, {e.years}
+          </p>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="about__skills">
+    <h3 class="label">Skills</h3>
+    <dl class="skills">
+      {
+        profile.skills.map((s) => (
+          <div class="skills__row">
+            <dt>{s.group}</dt>
+            <dd>{s.items.join(' · ')}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .about { display: grid; gap: var(--s16); padding: var(--s24) var(--gutter); }
+  @media (min-width: 64rem) {
+    .about { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--s24); align-items: start; }
+  }
+  .about__intro { display: grid; gap: var(--s8); justify-items: start; }
+  .about__title { font-size: var(--step-4); }
+  .about__intro :global(.about__portrait) { width: min(100%, 20rem); height: auto; }
+  .about__summary { max-width: 38ch; font-size: var(--step-1); font-weight: 500; line-height: 1.4; }
+  .label {
+    margin-bottom: var(--s3);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 80%;
+    font-size: 1.15rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .skills { border-top: 4px solid var(--ink); }
+  .skills__row {
+    display: grid;
+    gap: var(--s2);
+    padding-block: var(--s4);
+    border-bottom: 1px solid var(--hairline);
+  }
+  @media (min-width: 40rem) {
+    .skills__row { grid-template-columns: 11rem minmax(0, 1fr); gap: var(--s6); }
+  }
+  .skills dt {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 80%;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .skills dd { max-width: 52ch; }
+</style>

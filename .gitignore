@@ -1,0 +1,48 @@
+node_modules
+dist
+.astro
+.vercel
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# Never commit: assets-src is raw/uncurated originals (docs/ASSETS.md: "never served, read-only
+# reference"), and it physically contains files explicitly marked "do not publish" (e.g. Batchkeeper's
+# 15-account.png, which shows a real email) alongside the safe ones. Astro's build-time glob exclusions
+# only keep these out of the deployed site, not out of git, so exclude the whole tree here instead of
+# trying to enumerate every unsafe file.
+assets-src/
+
+# src/assets/ IS committed (the build imports from it), but these specific working copies must not
+# be published even though they're git-tracked: 15-account.png shows a real email (docs/ASSETS.md §2),
+# and Wattforge's our-work captures show fictional named projects that read as real (docs/ASSETS.md §5).
+# Both are already excluded from the build itself in src/data/work/screens.ts.
+src/assets/batchkeeper/*/15-account.png
+src/assets/wattforge-solar/our-work-*.png
+
+*.pdf.bak
+
+# Ad-hoc QA screenshots, not part of the site or its documented asset layout
+review-screenshots/
+
+# Internal planning/decision docs and Claude Code project instructions: useful locally, not needed to
+# build or understand the shipped site, and not safe for a public repo — docs/ASSETS.md in particular
+# names real personal email addresses in plain text as part of documenting what was redacted from the
+# screenshots themselves (found Sep 23, after an earlier push already exposed them; repo was deleted
+# and recreated to fully clear history). Keep these files on disk; just don't track them.
+CLAUDE.md
+PRODUCT.md
+DESIGN-BRIEF.md
+docs/
+
+# tools/ scripts automated capturing/redacting client and personal data; not needed to run the site.
+# build-sw.mjs is the one exception: astro.config.mjs's build hook imports it.
+tools/capture/
+tools/images/
+tools/README.md
+tools/package.json
+tools/package-lock.json
+
+# Claude Code's own dev-server config; irrelevant to anyone cloning the repo to run the site.
+.claude/

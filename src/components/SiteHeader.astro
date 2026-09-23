@@ -1,0 +1,80 @@
+---
+import { profile } from '../data/profile';
+---
+
+<header class="bar">
+  <a class="bar__id" href="/">{profile.name}</a>
+  <nav aria-label="Primary" class="bar__nav">
+    <a href="/#work">Work</a>
+    <a href="/#about">About</a>
+    <a href="/#contact">Contact</a>
+  </nav>
+  <span class="tag tag--live bar__net" id="net" role="status">
+    <span class="tag__dot" aria-hidden="true"></span>
+    <span id="net-text">Synced</span>
+  </span>
+</header>
+
+<script>
+  // Mirrors what the apps do: shows whether the browser is online. The site also keeps working offline once visited.
+  const net = document.getElementById('net');
+  const label = document.getElementById('net-text');
+  function sync() {
+    const online = navigator.onLine;
+    if (label) label.textContent = online ? 'Synced' : 'Offline';
+    net?.classList.toggle('tag--live', online);
+    net?.classList.toggle('tag--outline', !online);
+  }
+  addEventListener('online', sync);
+  addEventListener('offline', sync);
+  sync();
+</script>
+
+<style>
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s4);
+    min-height: 3.5rem;
+    padding: var(--s2) var(--gutter);
+    background: var(--signal);
+    color: var(--on-signal);
+  }
+  .bar__id,
+  .bar__nav a {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 80%;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .bar__nav {
+    display: flex;
+    gap: var(--s6);
+  }
+  .bar__nav a {
+    padding-block: var(--s3);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .bar__nav a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 0.15em;
+  }
+  @media (max-width: 40rem) {
+    .bar__net { display: none; }
+    .bar__nav { gap: var(--s4); }
+    .bar__id { font-size: 1rem; }
+    .bar__nav a { font-size: 0.95rem; }
+  }
+  @media (max-width: 24rem) {
+    .bar__id { display: none; }
+    .bar { justify-content: center; }
+  }
+</style>

@@ -1,0 +1,59 @@
+---
+interface Props {
+  items: { title: string; text: string; reason?: string }[];
+}
+const { items } = Astro.props;
+---
+
+<ol class="decisions">
+  {
+    items.map((d, i) => (
+      <li>
+        <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        <div>
+          <h3>{d.title}</h3>
+          <p>{d.text}</p>
+          {
+            d.reason && (
+              <p class="why">
+                <span class="tag tag--outline">Why</span>
+                <span>{d.reason}</span>
+              </p>
+            )
+          }
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .decisions { display: grid; }
+  li {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: var(--s4);
+    max-width: none;
+    padding-block: var(--s6);
+    border-top: 2px solid color-mix(in oklch, currentColor 35%, transparent);
+  }
+  li:last-child { border-bottom: 2px solid color-mix(in oklch, currentColor 35%, transparent); }
+  .n {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-stretch: 80%;
+    font-size: var(--step-1);
+    line-height: 1.1;
+  }
+  h3 {
+    margin-bottom: var(--s3);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 85%;
+    font-size: var(--step-2);
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  p { max-width: 52ch; }
+  .why { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s3); margin-top: var(--s4); font-weight: 600; }
+</style>

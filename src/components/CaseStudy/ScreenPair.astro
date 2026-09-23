@@ -1,0 +1,57 @@
+---
+import { Picture } from 'astro:assets';
+import { screenImage } from '../../data/work/screens';
+import type { ScreenPair } from '../../data/work';
+
+interface Props { pair: ScreenPair }
+const { pair } = Astro.props;
+const wireframe = screenImage('wireframe', pair.slug);
+const build = screenImage('app', pair.slug);
+// Full-page captures keep their own height, so nothing the caption mentions is cropped off.
+const frame = (img: ImageMetadata) => `--ratio:${img.width} / ${img.height};--wh:${(img.width / img.height).toFixed(4)}`;
+const sizes = '(min-width: 64rem) 15rem, 42vw';
+---
+
+<article class="pair" aria-labelledby={`pair-${pair.slug}`}>
+  <div class="pair__text">
+    <h3 id={`pair-${pair.slug}`}>{pair.title}</h3>
+    <p>{pair.caption}</p>
+  </div>
+  <div class="pair__phones">
+    <figure class="phone" style={frame(wireframe)}>
+      <figcaption class="tag tag--ink phone__label">Wireframe</figcaption>
+      <Picture src={wireframe} alt={pair.wireframeAlt} widths={[240, 360, 480]} sizes={sizes} formats={['avif']} fallbackFormat="webp" loading="lazy" />
+    </figure>
+    <figure class="phone" style={frame(build)}>
+      <figcaption class="tag tag--signal phone__label">Built</figcaption>
+      <Picture src={build} alt={pair.buildAlt} widths={[240, 360, 480]} sizes={sizes} formats={['avif']} fallbackFormat="webp" loading="lazy" />
+    </figure>
+  </div>
+</article>
+
+<style>
+  .pair { display: grid; gap: var(--s8); }
+  .pair__text { display: grid; gap: var(--s3); align-content: start; }
+  .pair__text h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 85%;
+    font-size: var(--step-2);
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .pair__text p { max-width: 44ch; }
+  .pair__phones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s6);
+    align-items: start;
+    padding-top: var(--s3); /* room for the labels that sit on the top edge */
+  }
+  @media (min-width: 64rem) {
+    .pair { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); gap: var(--s12); align-items: start; }
+    /* the caption stays in view while a tall screen scrolls past */
+    .pair__text { position: sticky; top: calc(3.5rem + var(--s8)); }
+    .pair__phones { gap: var(--s8); }
+  }
+</style>

@@ -1,0 +1,176 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import Flow from '../../components/Flow.astro';
+import SiteShot from '../../components/SiteShot.astro';
+import Header from '../../components/CaseStudy/Header.astro';
+import Section from '../../components/CaseStudy/Section.astro';
+import Decisions from '../../components/CaseStudy/Decisions.astro';
+import Timeline from '../../components/CaseStudy/Timeline.astro';
+import ScreenPair from '../../components/CaseStudy/ScreenPair.astro';
+import ScreenGrid from '../../components/CaseStudy/ScreenGrid.astro';
+import AppScreens from '../../components/CaseStudy/AppScreens.astro';
+import { caseStudies } from '../../data/work';
+import { siteImage } from '../../data/work/screens';
+
+export function getStaticPaths() {
+  return caseStudies.map((study, i) => ({
+    params: { slug: study.slug },
+    props: { study, next: caseStudies[(i + 1) % caseStudies.length] },
+  }));
+}
+
+const { study, next } = Astro.props;
+const shots = study.shots;
+const nextChars = Math.max(...next.name.split(' ').map((w) => w.length));
+
+// Sections appear only when the project has the material for them.
+const keys = [
+  'problem',
+  'decisions',
+  ...(study.flows ? ['flows'] : []),
+  ...(study.comparison ? ['comparison'] : []),
+  ...(shots ? ['shots'] : []),
+  ...(study.appScreens ? ['appScreens'] : []),
+  ...(study.notes ?? []).map((_, i) => `note-${i}`),
+  ...(study.after ? ['after'] : []),
+];
+// Tone alternates paper, ink, paper ... The screenshot sections stay on paper: the frames are ink and would vanish on ink.
+const forcedPaper = new Set(['comparison', 'shots', 'appScreens']);
+const tones: Record<string, 'paper' | 'ink'> = {};
+let prev: 'paper' | 'ink' = 'ink';
+for (const k of keys) {
+  prev = forcedPaper.has(k) || prev === 'ink' ? 'paper' : 'ink';
+  tones[k] = prev;
+}
+const num = (key: string) => keys.indexOf(key) + 1;
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+---
+
+<!-- noindex stays until launch (P6). -->
+<Base title={`${study.name} · Emmanuel Mbaeri`} description={study.outcome} ogImage={study.slug} noindex>
+  <SiteHeader />
+  <main id="main">
+    <Header study={study} />
+
+    <Section id="problem" num={num('problem')} tone={tones.problem} title={study.problemTitle ?? 'The problem'}>
+      {study.problem.map((p) => <p>{p}</p>)}
+    </Section>
+
+    <Section id="decisions" num={num('decisions')} tone={tones.decisions} title="What I decided">
+      <Decisions items={study.decisions} />
+    </Section>
+
+    {
+      study.flows && (
+        <Section id="flows" num={num('flows')} tone={tones.flows} title="How it works">
+          <div class="stack">
+            {study.flows.map((f) => (
+              <Flow title={f.title} steps={f.steps} bg={tones.flows === 'ink' ? 'var(--ink)' : 'var(--paper)'} />
+            ))}
+          </div>
+        </Section>
+      )
+    }
+
+    {
+      study.comparison && (
+        <Section id="comparison" num={num('comparison')} tone={tones.comparison} title="Wireframe vs. build">
+          <p>{study.comparison.lead}</p>
+          <div class="stack stack--pairs">
+            {study.comparison.pairs.map((pair) => <ScreenPair pair={pair} />)}
+          </div>
+          <ScreenGrid screens={study.comparison.moreScreens} />
+        </Section>
+      )
+    }
+
+    {
+      shots && (
+        <Section id="screens" num={num('shots')} tone={tones.shots} title="Screens">
+          <p>{shots.lead}</p>
+          <div class="stack stack--pairs">
+            {shots.items.map((s, i) => (
+              <article class="shot" aria-labelledby={`shot-${s.file}`}>
+                <h3 id={`shot-${s.file}`}>{s.title}</h3>
+                <SiteShot
+                  left={i % 2 === 1}
+                  desktop={siteImage(study.slug, `${s.file}-desktop-fold`)}
+                  mobile={siteImage(study.slug, `${s.file}-mobile-fold`)}
+                  desktopAlt={s.desktopAlt}
+                  mobileAlt={s.mobileAlt}
+                  url={shots.browserUrl}
+                  stamp={shots.stamp}
+                  sizes="(min-width: 64rem) 50rem, 100vw"
+                />
+              </article>
+            ))}
+          </div>
+        </Section>
+      )
+    }
+
+    {
+      study.appScreens && (
+        <Section id="app-screens" num={num('appScreens')} tone={tones.appScreens} title="Screens">
+          <p>{study.appScreens.lead}</p>
+          <AppScreens groups={study.appScreens.groups} />
+        </Section>
+      )
+    }
+
+    {
+      (study.notes ?? []).map((n, i) => (
+        <Section id={slugify(n.title)} num={num(`note-${i}`)} tone={tones[`note-${i}`]} title={n.title}>
+          {n.text.map((p) => <p>{p}</p>)}
+        </Section>
+      ))
+    }
+
+    {
+      study.after && (
+        <Section id="after" num={num('after')} tone={tones.after} title="After launch">
+          <Timeline items={study.after} />
+        </Section>
+      )
+    }
+
+    <section class="next tone-signal" aria-labelledby="next-h">
+      <p class="next__label">Next project</p>
+      <h2 id="next-h" class="display next__title" style={`--chars:${nextChars}`}><a href={`/work/${next.slug}`}>{next.name}<span aria-hidden="true"> →</span></a></h2>
+      <p class="next__lede">{next.lede}</p>
+    </section>
+  </main>
+  <SiteFooter />
+</Base>
+
+<style>
+  .stack { display: grid; gap: var(--s16); }
+  .stack--pairs { gap: var(--s24); }
+
+  .shot { display: grid; gap: var(--s8); }
+  .shot h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 85%;
+    font-size: var(--step-2);
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+
+  .next { display: grid; gap: var(--s6); padding: var(--s24) var(--gutter); }
+  .next__label {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 80%;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  /* the longest word sets the size, at about 0.8em per capital letter, so it never overflows a phone */
+  .next__title { font-size: min(var(--step-4), calc((100vw - 2 * var(--gutter)) / (var(--chars) * 0.85))); }
+  .next__title a { text-decoration: none; }
+  .next__title a:hover { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.1em; }
+  .next__lede { max-width: 44ch; font-size: var(--step-1); font-weight: 500; line-height: 1.35; }
+</style>

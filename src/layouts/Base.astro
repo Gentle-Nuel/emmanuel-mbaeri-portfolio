@@ -1,0 +1,102 @@
+---
+import '../styles/global.css';
+import '../styles/frames.css';
+import anybodyLatin from '@fontsource-variable/anybody/files/anybody-latin-wdth-normal.woff2?url';
+import anybodyLatinExt from '@fontsource-variable/anybody/files/anybody-latin-ext-wdth-normal.woff2?url';
+import atkinsonLatin from '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2?url';
+import atkinsonLatinExt from '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-ext-wght-normal.woff2?url';
+
+// Hand-written in place of the fontsource CSS imports (latin + latin-ext only — this site has no
+// Vietnamese content, so that subset is dropped) so `font-display` can be `optional` instead of the
+// package default `swap`. Lighthouse under real (devtools) throttling found `swap` causing a real,
+// measurable layout shift (CLS 0.317, "poor") when these fonts finished loading and reflowed
+// `.hero__foot` — `optional` uses the fallback font for the whole first paint if the real font isn't
+// ready in time, instead of swapping mid-render. Ranges copied verbatim from the fontsource files.
+const fontFaceCss = `
+@font-face {
+  font-family: 'Anybody Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  font-stretch: 50% 150%;
+  src: url('${anybodyLatin}') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Anybody Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  font-stretch: 50% 150%;
+  src: url('${anybodyLatinExt}') format('woff2-variations');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 200 800;
+  src: url('${atkinsonLatin}') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 200 800;
+  src: url('${atkinsonLatinExt}') format('woff2-variations');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}`;
+
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+  /** filename in public/og/, without extension. */
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = 'Emmanuel Mbaeri is a creative technologist. He designs and builds web and mobile software for clients worldwide.',
+  noindex = false,
+  ogImage = 'home',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0099FF" />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- og:image is root-relative; make it absolute with Astro.site once the domain is set (P6). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`/og/${ogImage}.png`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`/og/${ogImage}.png`} />
+    <link rel="preload" as="font" type="font/woff2" href={anybodyLatin} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={atkinsonLatin} crossorigin />
+    <style set:html={fontFaceCss} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+    {import.meta.env.PROD && (
+      <script>
+        if ('serviceWorker' in navigator) {
+          addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+        }
+      </script>
+    )}
+  </body>
+</html>

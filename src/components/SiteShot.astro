@@ -1,0 +1,53 @@
+---
+import { Picture } from 'astro:assets';
+
+interface Props {
+  desktop: ImageMetadata;
+  mobile: ImageMetadata;
+  desktopAlt: string;
+  mobileAlt: string;
+  /** the label in the browser frame */
+  url: string;
+  /** printed on the capture, so a demo or concept is never mistaken for real work */
+  stamp: string;
+  /** put the phone (and so the stamp's opposite edge) on the left */
+  left?: boolean;
+  /** `sizes` for the desktop capture, which depends on how wide its column is */
+  sizes?: string;
+}
+const { desktop, mobile, desktopAlt, mobileAlt, url, stamp, left = false, sizes = '(min-width: 64rem) 44rem, 100vw' } = Astro.props;
+---
+
+<div class:list={['site', { 'site--left': left }]}>
+  <figure class="browser" data-url={url}>
+    <Picture src={desktop} alt={desktopAlt} widths={[480, 720, 960, 1280]} sizes={sizes} formats={['avif']} fallbackFormat="webp" loading="lazy" />
+  </figure>
+  <figure class="phone site__phone">
+    <Picture src={mobile} alt={mobileAlt} widths={[240, 360, 480]} sizes="(min-width: 64rem) 11rem, 30vw" formats={['avif']} fallbackFormat="webp" loading="lazy" />
+  </figure>
+  <p class="tag tag--ink stamp">{stamp}</p>
+</div>
+
+<style>
+  /* Browser frame, a phone over one corner, and a stamp on the opposite edge. The frame's URL text is top-left, so the stamp never goes there. */
+  .site { position: relative; margin-bottom: var(--s16); }
+  .site__phone {
+    position: absolute;
+    right: -1%;
+    bottom: calc(var(--s16) * -1);
+    width: min(26%, 11rem);
+    transform: rotate(3deg);
+  }
+  .site--left .site__phone { right: auto; left: -1%; transform: rotate(-3deg); }
+  .stamp {
+    position: absolute;
+    bottom: calc(var(--s4) * -1);
+    left: calc(var(--s2) * -1);
+    z-index: 3;
+    transform: rotate(-4deg);
+    padding: 0.5rem 1.1rem;
+    font-size: clamp(0.85rem, 0.7rem + 0.6vw, 1.15rem);
+    max-width: none;
+  }
+  .site--left .stamp { bottom: auto; top: calc(var(--s4) * -1); left: auto; right: calc(var(--s2) * -1); transform: rotate(3deg); }
+</style>

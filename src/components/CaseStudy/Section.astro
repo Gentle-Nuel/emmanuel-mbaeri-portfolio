@@ -1,0 +1,30 @@
+---
+interface Props {
+  id: string;
+  tone: 'paper' | 'ink';
+  /** position in the page, shown as 01, 02 ... */
+  num: number;
+  title: string;
+}
+const { id, tone, num, title } = Astro.props;
+---
+
+<section id={id} class:list={['cs', `tone-${tone}`]} aria-labelledby={`${id}-h`}>
+  <div class="cs__head">
+    <span class="tag tag--outline">{String(num).padStart(2, '0')}</span>
+    <h2 id={`${id}-h`} class="display cs__title">{title}</h2>
+  </div>
+  <div class="cs__body"><slot /></div>
+</section>
+
+<style>
+  .cs { display: grid; gap: var(--s12); padding: var(--s24) var(--gutter); }
+  @media (min-width: 64rem) {
+    .cs { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--s24); align-items: start; }
+    .cs__head { position: sticky; top: calc(3.5rem + var(--s8)); }
+  }
+  .cs__head { display: grid; gap: var(--s4); justify-items: start; }
+  .cs__title { font-size: var(--step-3); }
+  .cs__body { display: grid; gap: var(--s6); min-width: 0; }
+  .cs__body > :global(p) { max-width: 46ch; font-size: var(--step-1); font-weight: 500; line-height: 1.4; }
+</style>

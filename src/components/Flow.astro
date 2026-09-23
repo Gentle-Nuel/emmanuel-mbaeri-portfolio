@@ -1,0 +1,88 @@
+---
+import type { FlowStep } from '../data/work/types';
+
+interface Props {
+  title?: string;
+  steps: FlowStep[];
+  /** section background colour, so the arrow chips blend in */
+  bg?: string;
+  /** heading level for the title, so the page's heading order stays valid */
+  level?: 'h3' | 'h4';
+}
+const { title, steps, bg = 'var(--paper)', level: Heading = 'h3' } = Astro.props;
+---
+
+<div class="flow" style={`--flow-bg:${bg};--cols:${steps.length}`}>
+  {title && <Heading class="flow__title">{title}</Heading>}
+  <ol class="flow__steps">
+    {
+      steps.map((s) => (
+        <li class:list={['step', { 'step--gap': s.gap }]}>
+          <span class={`tag tag--${s.kind}`}>{s.tag}</span>
+          <p>{s.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .flow__title {
+    margin-bottom: var(--s6);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 85%;
+    font-size: var(--step-2);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .flow__steps {
+    display: grid;
+    gap: var(--s8);
+  }
+  @media (min-width: 48rem) {
+    .flow__steps {
+      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+      gap: var(--s4);
+    }
+  }
+  .step {
+    position: relative;
+    display: grid;
+    gap: var(--s3);
+    align-content: start;
+    justify-items: start;
+    padding-top: var(--s4);
+    border-top: 4px solid currentColor;
+    max-width: none;
+  }
+  .step p {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  .step--gap {
+    border-top-style: dashed;
+  }
+  .step:not(:last-child)::after {
+    content: '→' / '';
+    position: absolute;
+    top: -1.05rem;
+    right: -0.1rem;
+    padding-inline: 0.15rem;
+    background: var(--flow-bg);
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+  @media (max-width: 47.99rem) {
+    .step:not(:last-child)::after {
+      content: '↓' / '';
+      top: auto;
+      bottom: -1.9rem;
+      right: auto;
+      left: 0;
+      background: transparent;
+    }
+  }
+</style>

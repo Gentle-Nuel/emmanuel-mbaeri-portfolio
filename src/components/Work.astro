@@ -1,0 +1,144 @@
+---
+import { Picture } from 'astro:assets';
+import Plate from './Plate.astro';
+import Flow from './Flow.astro';
+import SiteShot from './SiteShot.astro';
+import { work } from '../data/work';
+import { siteImage, eodeposImage } from '../data/work/screens';
+import bkWire from '../assets/batchkeeper/wireframe/01-production.png';
+import bkApp from '../assets/batchkeeper/app/01-production.png';
+
+const { eodepos, batchkeeper, rastaCutz, wattforgeSolar } = work;
+
+// The home plates show each website's first capture; the rest are on the case-study pages.
+const rasta = rastaCutz.shots!;
+const wattforge = wattforgeSolar.shots!;
+// The Android splash and sign-in, client logo permission granted Sep 21 (docs/ASSETS.md §3).
+const android = eodepos.appScreens!.groups[0].items;
+const phoneSizes = '(min-width: 64rem) 19rem, 60vw';
+// Android captures are 538x1197 / 537x1199, a little taller per width than the 390/844 default, so size each frame from its own image.
+const frame = (img: ImageMetadata) => `--ratio:${img.width} / ${img.height};--wh:${(img.width / img.height).toFixed(4)}`;
+---
+
+<section class="work" id="work" aria-labelledby="work-h">
+  <div class="work__intro tone-paper">
+    <h2 id="work-h" class="display work__title">Work</h2>
+    <p class="work__lede">Four projects: two are live, one was built on spec for a real shop, and one is a concept.</p>
+  </div>
+
+  <!-- EODEPos: paper, two flow diagrams. No screenshots: the working screens show the client's data. -->
+  <Plate id="eodepos" tone="paper" tags={eodepos.tags} lede={eodepos.lede} stack={eodepos.stack} chars={4}>
+    <Fragment slot="title"><span class="plate__line">EODE</span><span class="plate__line">Pos</span></Fragment>
+    <Fragment slot="actions"><a class="btn btn--signal" href="/work/eodepos">Read the case study</a></Fragment>
+    <div class="flows">
+      {eodepos.flows?.map((f) => <Flow level="h4" title={f.title} steps={f.steps} />)}
+    </div>
+    <div class="android">
+      {
+        android.map((s) => {
+          const img = eodeposImage(s.file);
+          return (
+            <figure class="phone" style={frame(img)}>
+              <Picture src={img} alt={s.alt} widths={[200, 300, 400]} sizes="(min-width: 64rem) 11rem, 34vw" formats={['avif']} fallbackFormat="webp" loading="eager" fetchpriority="high" />
+            </figure>
+          );
+        })
+      }
+    </div>
+  </Plate>
+
+  <!-- Batchkeeper: ink, wireframe behind and the built screen in front. -->
+  <Plate id="batchkeeper" tone="ink" flip tags={batchkeeper.tags} lede={batchkeeper.lede} stack={batchkeeper.stack} chars={6}>
+    <Fragment slot="title"><span class="plate__line">Batch</span><span class="plate__line">keeper</span></Fragment>
+    <Fragment slot="actions">
+      <a class="btn btn--signal" href="/work/batchkeeper">Read the case study</a>
+      <a class="btn btn--ghost" href="https://batchkeeper.vercel.app" rel="noopener">Open the app</a>
+    </Fragment>
+    <div class="pair">
+      <figure class="phone pair__back">
+        <figcaption class="tag phone__label">Wireframe</figcaption>
+        <Picture
+          src={bkWire}
+          alt="Batchkeeper wireframe, Production screen: a low-stock card, a Log a Batch button and recent batches with their yield."
+          widths={[240, 360, 480, 640]}
+          sizes={phoneSizes}
+          formats={['avif']}
+          fallbackFormat="webp"
+          loading="lazy"
+        />
+      </figure>
+      <figure class="phone pair__front">
+        <figcaption class="tag tag--signal phone__label">Built</figcaption>
+        <Picture
+          src={bkApp}
+          alt="Batchkeeper build, Production screen: a low-stock alert naming the products affected, and recent batches with their status."
+          widths={[240, 360, 480, 640]}
+          sizes={phoneSizes}
+          formats={['avif']}
+          fallbackFormat="webp"
+          loading="lazy"
+        />
+      </figure>
+    </div>
+  </Plate>
+
+  <!-- Rasta Cutz: signal, browser frame with a phone over its corner. -->
+  <Plate id="rasta-cutz" tone="signal" tags={rastaCutz.tags} lede={rastaCutz.lede} stack={rastaCutz.stack} chars={5}>
+    <Fragment slot="title"><span class="plate__line">Rasta</span> <span class="plate__line">Cutz</span></Fragment>
+    <Fragment slot="actions"><a class="btn" href="/work/rasta-cutz">Read the case study</a></Fragment>
+    <SiteShot
+      desktop={siteImage('rasta-cutz', 'home-desktop-fold')}
+      mobile={siteImage('rasta-cutz', 'home-mobile-fold')}
+      desktopAlt={rasta.items[0].desktopAlt}
+      mobileAlt={rasta.items[0].mobileAlt}
+      url={rasta.browserUrl}
+      stamp={rasta.stamp}
+    />
+  </Plate>
+
+  <!-- Wattforge Solar: paper, browser frame with a phone over its corner. Always stamped as a concept. -->
+  <Plate id="wattforge-solar" tone="paper" flip tags={wattforgeSolar.tags} lede={wattforgeSolar.lede} stack={wattforgeSolar.stack} chars={5}>
+    <Fragment slot="title"><span class="plate__line">Watt</span><span class="plate__line">forge</span> <span class="plate__line">Solar</span></Fragment>
+    <Fragment slot="actions"><a class="btn btn--signal" href="/work/wattforge-solar">Read the case study</a></Fragment>
+    <SiteShot
+      left
+      desktop={siteImage('wattforge-solar', 'home-desktop-fold')}
+      mobile={siteImage('wattforge-solar', 'home-mobile-fold')}
+      desktopAlt={wattforge.items[0].desktopAlt}
+      mobileAlt={wattforge.items[0].mobileAlt}
+      url={wattforge.browserUrl}
+      stamp={wattforge.stamp}
+    />
+  </Plate>
+</section>
+
+<style>
+  .work__intro { padding: var(--s24) var(--gutter) 0; }
+  .work__title { font-size: var(--step-4); }
+  .work__lede { max-width: 30ch; margin-top: var(--s6); font-size: var(--step-1); font-weight: 500; line-height: 1.35; }
+
+  /* EODEPos */
+  .flows { display: grid; gap: var(--s16); }
+  .android {
+    display: flex;
+    justify-content: center;
+    gap: var(--s8);
+    width: min(100%, 22rem);
+    margin-inline: auto;
+    margin-top: var(--s16);
+  }
+  .android .phone { width: 45%; }
+
+  /* Batchkeeper: two phones overlapping, the built one in front and a little lower */
+  .pair {
+    display: flex;
+    align-items: flex-start;
+    width: min(100%, 32rem);
+    margin-inline: auto;
+    padding-block: var(--s6);
+  }
+  .pair__back,
+  .pair__front { flex: none; width: 52%; }
+  .pair__back { transform: rotate(-3deg); }
+  .pair__front { margin-left: -4%; margin-top: 12%; transform: rotate(2deg); }
+</style>

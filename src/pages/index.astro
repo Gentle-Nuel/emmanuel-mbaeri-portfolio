@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Hero from '../components/Hero.astro';
+import Work from '../components/Work.astro';
+import Process from '../components/Process.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { profile } from '../data/profile';
+
+// `url` is added once the domain is set (astro.config.mjs's `site`).
+// No `address`: the user asked (Sep 23) not to publish his location.
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  alternateName: profile.legalName,
+  jobTitle: profile.role,
+  sameAs: [profile.contact.github.href, profile.contact.x.href],
+};
+---
+
+<!-- noindex stays until launch (P6); the real title and description are already the final copy. -->
+<Base
+  title="Emmanuel Mbaeri · Designer and full-stack developer"
+  description="Emmanuel Mbaeri is a creative technologist. He designs and builds web and mobile software for clients worldwide."
+  noindex
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(personJsonLd)} />
+  <SiteHeader />
+  <main id="main">
+    <Hero />
+    <Work />
+    <Process />
+    <About />
+    <Contact />
+  </main>
+  <SiteFooter />
+</Base>

@@ -1,0 +1,70 @@
+---
+import { profile } from '../data/profile';
+const { contact, cv } = profile;
+const mail = `mailto:${contact.email}`;
+---
+
+<section class="contact tone-signal" id="contact" aria-labelledby="contact-h">
+  <h2 id="contact-h" class="display contact__title">Say hello.</h2>
+
+  <div class="paths">
+    <div class="path">
+      <h3 class="path__title">Hiring</h3>
+      <p>I'm open to full-time and part-time roles. Read my CV, or email me.</p>
+      <div class="path__actions">
+        <a class="btn" href={cv.href} download={cv.downloadName}>Download CV</a>
+        <a class="btn btn--paper" href={mail}>Email me</a>
+      </div>
+    </div>
+    <div class="path">
+      <h3 class="path__title">Have a project?</h3>
+      <p>Tell me what you want to build. Message me on WhatsApp or email.</p>
+      <div class="path__actions">
+        <a class="btn" href={contact.whatsapp.href} rel="noopener">Message me on WhatsApp</a>
+        <a class="btn btn--paper" href={mail}>Email me</a>
+      </div>
+    </div>
+  </div>
+
+  <dl class="list">
+    <div><dt>Email</dt><dd><a href={mail}>{contact.email}</a></dd></div>
+    <div><dt>WhatsApp</dt><dd><a href={contact.whatsapp.href} rel="noopener">{contact.whatsapp.display}</a></dd></div>
+    <div><dt>X</dt><dd><a href={contact.x.href} rel="noopener">{contact.x.handle}</a></dd></div>
+    <div><dt>GitHub</dt><dd><a href={contact.github.href} rel="noopener">{contact.github.handle}</a></dd></div>
+  </dl>
+</section>
+
+<style>
+  .contact { display: grid; gap: var(--s16); padding: var(--s24) var(--gutter); }
+  .contact__title { font-size: var(--step-4); }
+  .paths { display: grid; gap: var(--s12); }
+  @media (min-width: 48rem) {
+    .paths { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s16); }
+  }
+  .path { display: grid; gap: var(--s4); align-content: start; justify-items: start; padding-top: var(--s4); border-top: 4px solid var(--ink); }
+  .path__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 85%;
+    font-size: var(--step-2);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .path p { font-size: var(--step-1); font-weight: 500; line-height: 1.35; max-width: 30ch; }
+  .path__actions { display: flex; flex-wrap: wrap; gap: var(--s4); margin-top: var(--s2); }
+
+  .list { display: grid; gap: var(--s4); border-top: 4px solid var(--ink); padding-top: var(--s4); }
+  @media (min-width: 48rem) {
+    .list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s6); }
+  }
+  .list dt {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 80%;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .list dd { font-weight: 600; overflow-wrap: anywhere; }
+  .list a { padding-block: var(--s2); }
+</style>

@@ -1,0 +1,86 @@
+---
+import type { WorkTag } from '../data/work';
+
+interface Props {
+  /** anchor and heading-id prefix, e.g. "batchkeeper" */
+  id: string;
+  tone: 'paper' | 'ink' | 'signal';
+  /** art on the left on wide screens (the DOM order stays head, then art) */
+  flip?: boolean;
+  tags: WorkTag[];
+  lede: string;
+  stack: string;
+  /** characters in the longest title line; sizes the title so it always fits its column */
+  chars: number;
+}
+const { id, tone, flip = false, tags, lede, stack, chars } = Astro.props;
+---
+
+<article id={id} class:list={['plate', `tone-${tone}`, { 'plate--flip': flip }]} aria-labelledby={`${id}-h`}>
+  <div class="plate__head">
+    <p class="plate__tags">
+      {
+        tags.map((t) => (
+          <span class={`tag tag--${t.kind}`}>
+            {t.dot && <span class="tag__dot" aria-hidden="true" />}
+            {t.label}
+          </span>
+        ))
+      }
+    </p>
+    <h3 id={`${id}-h`} class="display plate__title" style={`--chars:${chars};view-transition-name:title-${id}`}><slot name="title" /></h3>
+    <p class="plate__lede">{lede}</p>
+    <p class="plate__stack">{stack}</p>
+    <div class="plate__actions"><slot name="actions" /></div>
+  </div>
+  <div class="plate__art"><slot /></div>
+</article>
+
+<style>
+  .plate {
+    display: grid;
+    gap: var(--s16);
+    padding: var(--s24) var(--gutter);
+    overflow: clip;
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .plate {
+        animation: plate-reveal linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 25%;
+      }
+      @keyframes plate-reveal {
+        from { transform: translateY(3rem); }
+        to { transform: translateY(0); }
+      }
+    }
+  }
+  @media (min-width: 64rem) {
+    .plate {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--s24);
+      align-items: start;
+    }
+    .plate--flip { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+    .plate--flip .plate__head { order: 2; }
+    .plate__head { position: sticky; top: calc(3.5rem + var(--s8)); }
+  }
+  .plate__head {
+    display: grid;
+    gap: var(--s6);
+    justify-items: start;
+    container-type: inline-size;
+  }
+  .plate__tags { display: flex; flex-wrap: wrap; gap: var(--s3); max-width: none; }
+  .plate__title {
+    /* "EMMANUEL" measures 0.76em per letter at full width, so 0.8 leaves a little slack. */
+    font-size: min(9rem, calc(100cqi / (var(--chars) * 0.8)));
+  }
+  .plate__title :global(.plate__line) { display: block; }
+  .plate__lede { max-width: 34ch; font-size: var(--step-1); font-weight: 500; line-height: 1.35; }
+  .plate__stack { font-size: var(--step--1); font-weight: 600; letter-spacing: 0.02em; }
+  .tone-paper .plate__stack { color: var(--mute); }
+  .plate__actions { display: flex; flex-wrap: wrap; gap: var(--s4); }
+  .plate__art { align-self: center; min-width: 0; }
+</style>

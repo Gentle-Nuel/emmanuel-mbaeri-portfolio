@@ -1,0 +1,70 @@
+---
+import { Picture } from 'astro:assets';
+import { eodeposImage } from '../../data/work/screens';
+import type { AppScreen } from '../../data/work';
+
+interface Props { groups: { title: string; items: AppScreen[] }[] }
+const { groups } = Astro.props;
+const sizes = '(min-width: 64rem) 13rem, 40vw';
+---
+
+<div class="groups">
+  {
+    groups.map((g) => (
+      <div class="group">
+        <h3 class="group__title">{g.title}</h3>
+        <ul class="grid">
+          {g.items.map((s) => (
+            <li>
+              <figure class="phone">
+                <Picture src={eodeposImage(s.file)} alt={s.alt} widths={[240, 360, 480]} sizes={sizes} formats={['avif']} fallbackFormat="webp" loading="lazy" />
+              </figure>
+              <p class="name">{s.title}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .groups { display: grid; gap: var(--s16); }
+  .group__title {
+    margin-bottom: var(--s6);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 80%;
+    font-size: 1.15rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  /* Every phone frame is the same fixed box (390:844, the standard screen ratio, exactly 780:1688 halved).
+     attendant-05-checkout was captured at a different ratio (863x1470, a manual capture, not the automated
+     780x1688 ones) — forcing its frame to match by width or by height made it render a different size than
+     its neighbours either way. object-fit: contain below fits it inside the same box with no crop and no
+     stretch; the gap that leaves (a thin white band, top and bottom) reads as part of the screen, not a bug. */
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: fit-content;
+    gap: var(--s8) var(--s4);
+  }
+  @media (min-width: 64rem) {
+    .grid { gap: var(--s8) var(--s6); }
+  }
+  .grid li { display: grid; flex: none; gap: var(--s3); justify-items: start; max-width: none; }
+  .grid .phone { width: auto; height: 20.6rem; }
+  .grid .phone :global(img) { object-fit: contain; }
+  @media (min-width: 64rem) {
+    .grid .phone { height: 28.1rem; }
+  }
+  .name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 80%;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+</style>

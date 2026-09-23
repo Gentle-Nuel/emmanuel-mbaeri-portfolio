@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+
+<Base title="Page not found · Emmanuel Mbaeri" description="This page does not exist." noindex>
+  <SiteHeader />
+  <main id="main" class="lost tone-signal">
+    <p class="tag tag--alert lost__tag">Error 404</p>
+    <h1 class="display lost__title">
+      <span class="lost__line">Nothing</span>
+      <span class="lost__line">on this</span>
+      <span class="lost__line">shelf.</span>
+    </h1>
+    <p class="lost__text">That page is not here. The link may have a typo, or the page may have moved.</p>
+    <div class="lost__actions">
+      <a class="btn" href="/">Go home</a>
+      <a class="btn btn--paper" href="/#work">See the work</a>
+    </div>
+  </main>
+  <SiteFooter />
+</Base>
+
+<style>
+  .lost {
+    display: grid;
+    gap: var(--s8);
+    justify-items: start;
+    align-content: center;
+    min-height: min(calc(100svh - 3.5rem), 52rem);
+    padding: var(--s16) var(--gutter);
+  }
+  .lost__title {
+    /* "ON THIS" is the widest line at 7 characters; 0.8em each leaves a little slack. */
+    font-size: min(10rem, calc((100vw - 2 * var(--gutter)) / (7 * 0.8)));
+  }
+  .lost__line { display: block; }
+  .lost__text { max-width: 34ch; font-size: var(--step-1); font-weight: 500; line-height: 1.35; }
+  .lost__actions { display: flex; flex-wrap: wrap; gap: var(--s4); }
+</style>
