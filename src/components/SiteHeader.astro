@@ -1,9 +1,15 @@
 ---
 import { profile } from '../data/profile';
+
+const [first, ...rest] = profile.name.split(' ');
+const shortName = `${first[0]}. ${rest.join(' ')}`;
 ---
 
 <header class="bar">
-  <a class="bar__id" href="/">{profile.name}</a>
+  <a class="bar__id" href="/" aria-label={profile.name}>
+    <span class="bar__full" aria-hidden="true">{profile.name}</span>
+    <span class="bar__short" aria-hidden="true">{shortName}</span>
+  </a>
   <nav aria-label="Primary" class="bar__nav">
     <a href="/#work">Work</a>
     <a href="/#about">About</a>
@@ -39,13 +45,14 @@ import { profile } from '../data/profile';
     align-items: center;
     justify-content: space-between;
     gap: var(--s4);
-    min-height: 3.5rem;
-    padding: var(--s2) var(--gutter);
+    height: var(--bar-h);
+    padding: 0 var(--gutter);
     background: var(--signal);
     color: var(--on-signal);
   }
   .bar__id,
   .bar__nav a {
+    padding-block: var(--s3);
     font-family: var(--font-display);
     font-weight: 800;
     font-stretch: 80%;
@@ -54,12 +61,12 @@ import { profile } from '../data/profile';
     text-transform: uppercase;
     text-decoration: none;
   }
+  .bar__short { display: none; }
   .bar__nav {
     display: flex;
     gap: var(--s6);
   }
   .bar__nav a {
-    padding-block: var(--s3);
     font-weight: 700;
     font-size: 1.05rem;
   }
@@ -73,8 +80,9 @@ import { profile } from '../data/profile';
     .bar__id { font-size: 1rem; }
     .bar__nav a { font-size: 0.95rem; }
   }
+  /* The full name doesn't fit beside the nav below 24rem, so show a short form rather than hiding the home link. */
   @media (max-width: 24rem) {
-    .bar__id { display: none; }
-    .bar { justify-content: center; }
+    .bar__full { display: none; }
+    .bar__short { display: inline; }
   }
 </style>

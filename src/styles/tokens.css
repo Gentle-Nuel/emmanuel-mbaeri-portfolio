@@ -36,6 +36,9 @@
   --s32: 8rem;
   --gutter: clamp(1rem, 4vw, 3rem);
 
+  /* Sticky header height. scroll-padding-top uses the same value so in-page jumps land flush under it. */
+  --bar-h: 4.25rem;
+
   /* The diagonal cut from the studio mark, applied to labels */
   --cut: 0.7rem;
 

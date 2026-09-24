@@ -48,8 +48,7 @@ const num = (key: string) => keys.indexOf(key) + 1;
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 ---
 
-<!-- noindex stays until launch (P6). -->
-<Base title={`${study.name} · Emmanuel Mbaeri`} description={study.outcome} ogImage={study.slug} noindex>
+<Base title={`${study.name} · Emmanuel Mbaeri`} description={study.outcome} ogImage={study.slug}>
   <SiteHeader />
   <main id="main">
     <Header study={study} />

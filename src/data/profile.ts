@@ -12,7 +12,7 @@ export const profile = {
   remote: 'Working remotely with clients worldwide',
   availability: 'Available',
   summary:
-    'I am a creative technologist. I finished a B.Tech in Computer Science at the Federal University of Technology Owerri in 2026, and since 2024 I have been freelancing: designing and building web and mobile apps end to end, from requirements through deployment. I work remotely with clients worldwide, and I am open to full-time and part-time roles as well as freelance projects.',
+    'I am a creative technologist. I finished a B.Tech in Computer Science in 2026, and since 2024 I have been freelancing: designing and building web and mobile apps end to end, from requirements through deployment. I work remotely with clients worldwide, and I am open to full-time and part-time roles as well as freelance projects.',
 
   contact: {
     email: 'embaeri@gmail.com',
@@ -31,11 +31,8 @@ export const profile = {
   },
 
   education: [
-    {
-      what: 'B.Tech, Computer Science',
-      where: 'Federal University of Technology Owerri (FUTO)',
-      years: '2021 – 2026',
-    },
+    // School name left out on purpose (Sep 23): it names his city, and his location isn't published.
+    { what: 'B.Tech, Computer Science', year: '2026' },
   ],
 
   // Grouped for scanning. Sourced from the Sep 2026 Full-Stack CV, plus design skills from the general CV.
