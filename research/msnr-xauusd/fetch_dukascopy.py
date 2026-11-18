@@ -1,7 +1,7 @@
 """Politely download Dukascopy XAUUSD 1-minute BID candles (one file per UTC day) and write an M5 CSV.
 
 Usage: python3 fetch_dukascopy.py OUT_DIR 2026-02-01 2026-11-18
-One request every 3 s; on HTTP 429/5xx waits 60 s, then 120 s, ... (max 5 tries per file). Files already
+One request every 8 s; on HTTP 429/5xx waits 60 s, then 120 s, ... (max 5 tries per file). Files already
 downloaded are skipped, so the script can be re-run after an interruption.
 """
 import lzma
@@ -25,7 +25,7 @@ def fetch(day):
         return path
     url = URL.format(y=day.year, m=day.month - 1, d=day.day)  # Dukascopy months are 0-based
     for attempt in range(5):
-        time.sleep(3)
+        time.sleep(8)
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "msnr-backtest-research/1.0 (python urllib)"})
             with urllib.request.urlopen(req, timeout=30) as r:
@@ -46,12 +46,17 @@ def fetch(day):
             wait = 60 * (attempt + 1)
             print(f"{day:%Y-%m-%d}: {e}, waiting {wait}s", flush=True)
             time.sleep(wait)
-    raise SystemExit(f"giving up on {day:%Y-%m-%d} after 5 tries")
+    print(f"{day:%Y-%m-%d}: skipped after 5 tries (re-run later to fill it in)", flush=True)
+    return None
 
 
-rows = []
+rows, missing = [], []
 for day in pd.date_range(START, END, freq="D"):
     path = fetch(day)
+    if path is None:
+        if day.dayofweek != 5:  # Saturdays have no gold trading anyway
+            missing.append(f"{day:%Y-%m-%d}")
+        continue
     blob = open(path, "rb").read()
     if not blob:
         continue
@@ -67,4 +72,5 @@ m1[["open", "high", "low", "close"]] /= 1000.0  # XAUUSD point = 0.001
 m5 = m1.resample("5min").agg({"open": "first", "high": "max", "low": "min", "close": "last"}).dropna()
 m5.index.name = "time"
 m5.to_csv(f"{OUT}/XAUUSD_M5_dukascopy_utc.csv")
+print("missing trading days:", missing or "none")
 print("bars", len(m5), m5.index[0], m5.index[-1], "last close", m5.close.iloc[-1])
