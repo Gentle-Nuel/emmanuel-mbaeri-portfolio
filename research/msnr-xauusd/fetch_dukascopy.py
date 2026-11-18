@@ -1,7 +1,8 @@
 """Politely download Dukascopy XAUUSD 1-minute BID candles (one file per UTC day) and write an M5 CSV.
 
-Usage: python3 fetch_dukascopy.py OUT_DIR 2026-02-01 2026-11-18
-One request every 8 s; on HTTP 429/5xx waits 60 s, then 120 s, ... (max 5 tries per file). Files already
+Usage: python3 fetch_dukascopy.py OUT_DIR 2026-04-01 2026-11-18 [--priority-from 2026-05-15] [--fetch-only]
+Weekdays only (gold is closed on Saturday and opens late Sunday UTC).
+One request every 15 s; on HTTP 429/5xx waits 60 s, then 120 s, ... (max 5 tries per file). Files already
 downloaded are skipped, so the script can be re-run after an interruption.
 """
 import lzma
@@ -25,7 +26,7 @@ def fetch(day):
         return path
     url = URL.format(y=day.year, m=day.month - 1, d=day.day)  # Dukascopy months are 0-based
     for attempt in range(5):
-        time.sleep(8)
+        time.sleep(15)
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "msnr-backtest-research/1.0 (python urllib)"})
             with urllib.request.urlopen(req, timeout=30) as r:
@@ -50,12 +51,23 @@ def fetch(day):
     return None
 
 
+FETCH_ONLY = "--fetch-only" in sys.argv
+PRIORITY = sys.argv[sys.argv.index("--priority-from") + 1] if "--priority-from" in sys.argv else START
+days = [d for d in pd.date_range(START, END, freq="D") if d.dayofweek < 5]  # weekdays only
+# fetch the priority window first, then the earlier look-back days (newest first)
+order = [d for d in days if d >= pd.Timestamp(PRIORITY)] + sorted(
+    [d for d in days if d < pd.Timestamp(PRIORITY)], reverse=True)
+for day in order:
+    if fetch(day) is not None:
+        print(f"{day:%Y-%m-%d} downloaded", flush=True)
+if FETCH_ONLY:
+    sys.exit(0)
+
 rows, missing = [], []
-for day in pd.date_range(START, END, freq="D"):
-    path = fetch(day)
-    if path is None:
-        if day.dayofweek != 5:  # Saturdays have no gold trading anyway
-            missing.append(f"{day:%Y-%m-%d}")
+for day in days:
+    path = f"{OUT}/raw/{day:%Y%m%d}.bi5"
+    if not os.path.exists(path):
+        missing.append(f"{day:%Y-%m-%d}")
         continue
     blob = open(path, "rb").read()
     if not blob:
